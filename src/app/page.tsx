@@ -1,9 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import MetricCard from "@/components/MetricCard";
 import InvestigationQueue from "@/components/InvestigationQueue";
 import InvestigationDetails from "@/components/InvestigationDetails";
 import WorkflowPipeline from "@/components/WorkflowPipeline";
 
 export default function Home() {
+  const [selectedId, setSelectedId] = useState("TXN-1001");
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-7xl mx-auto px-8 py-10">
@@ -95,13 +99,20 @@ export default function Home() {
       </p>
     </div>
 
-    <InvestigationQueue />
+    <InvestigationQueue
+  selectedId={selectedId}
+  onSelect={setSelectedId}
+/>
 
   </div>
 
   <div className="space-y-6">
-    <InvestigationDetails />
-    <WorkflowPipeline />
+  <InvestigationDetails
+  selectedId={selectedId}
+/>
+<WorkflowPipeline
+  selectedId={selectedId}
+/>
   </div>
 
 </div>

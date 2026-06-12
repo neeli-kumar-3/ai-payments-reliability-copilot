@@ -1,4 +1,25 @@
-export default function InvestigationDetails() {
+type Props = {
+    selectedId: string;
+  };
+  
+  const transactionData = {
+    "TXN-1001": {
+      failureType: "Insufficient Funds",
+    },
+    "TXN-1002": {
+      failureType: "Bank Timeout",
+    },
+    "TXN-1003": {
+      failureType: "Fraud Suspected",
+    },
+  };
+  
+  export default function InvestigationDetails({
+    selectedId,
+  }: Props) {
+    const transaction =
+      transactionData[selectedId as keyof typeof transactionData];
+  
     return (
       <div className="border border-zinc-800 bg-zinc-900 rounded-2xl p-6">
         <h3 className="text-xl font-semibold mb-6">
@@ -10,14 +31,14 @@ export default function InvestigationDetails() {
             <p className="text-xs text-zinc-500 mb-1">
               TRANSACTION
             </p>
-            <p>TXN-1002</p>
+            <p>{selectedId}</p>
           </div>
   
           <div>
             <p className="text-xs text-zinc-500 mb-1">
               FAILURE TYPE
             </p>
-            <p>Bank Timeout</p>
+            <p>{transaction.failureType}</p>
           </div>
   
           <div>

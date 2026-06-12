@@ -1,4 +1,11 @@
-const investigations = [
+"use client";
+type Investigation = {
+    id: string;
+    issue: string;
+    priority: string;
+  };
+  
+  const investigations: Investigation[] = [
     {
       id: "TXN-1001",
       issue: "Insufficient Funds",
@@ -16,7 +23,15 @@ const investigations = [
     },
   ];
   
-  export default function InvestigationQueue() {
+  type Props = {
+    selectedId: string;
+    onSelect: (id: string) => void;
+  };
+  
+  export default function InvestigationQueue({
+    selectedId,
+    onSelect,
+  }: Props) {
     return (
       <div className="border border-zinc-800 bg-zinc-900 rounded-2xl p-6">
         <div className="mb-6">
@@ -31,10 +46,15 @@ const investigations = [
   
         <div className="space-y-3">
           {investigations.map((item) => (
-            <div
-              key={item.id}
-              className="border border-zinc-800 rounded-xl p-4"
-            >
+           <div
+           key={item.id}
+           onClick={() => onSelect(item.id)}
+           className={`border rounded-xl p-4 cursor-pointer transition ${
+             selectedId === item.id
+               ? "border-blue-500 bg-zinc-800"
+               : "border-zinc-800"
+           }`}
+         >
               <div className="flex justify-between items-center">
                 <div>
                   <p className="font-medium">
