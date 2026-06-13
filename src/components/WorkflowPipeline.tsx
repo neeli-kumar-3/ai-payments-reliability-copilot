@@ -1,19 +1,27 @@
-type Props = {
+import {
+    sampleTransactions,
+    Transaction,
+  } from "@/data/sample-transactions";
+  
+  type Props = {
     selectedId: string;
+    transactions?: Transaction[];
   };
   
   const workflows = {
-    "TXN-1001": [
+    INSUFFICIENT_FUNDS: [
       "Failure Classified",
       "Balance Check Tool",
       "Retry Recommendation",
     ],
-    "TXN-1002": [
+  
+    BANK_TIMEOUT: [
       "Failure Classified",
       "Bank Connectivity Check",
       "Retry Decision Engine",
     ],
-    "TXN-1003": [
+  
+    FRAUD_SUSPECTED: [
       "Failure Classified",
       "Fraud Risk Tool",
       "Customer Lookup Tool",
@@ -23,9 +31,23 @@ type Props = {
   
   export default function WorkflowPipeline({
     selectedId,
+    transactions,
   }: Props) {
+    const transaction = (
+      transactions ?? sampleTransactions
+    ).find((txn) => txn.id === selectedId);
+  
+    const isSuccess =
+      transaction?.status === "SUCCESS";
+  
+    const key =
+      transaction?.failureType?.trim();
+  
     const steps =
-      workflows[selectedId as keyof typeof workflows];
+      workflows[key as keyof typeof workflows] ?? [
+        "Failure Classified",
+        "AI Investigation Pending",
+      ];
   
     return (
       <div className="border border-zinc-800 bg-zinc-900 rounded-2xl p-6">
@@ -33,20 +55,32 @@ type Props = {
           Workflow Pipeline
         </h3>
   
-        <div className="space-y-4">
-          {steps.map((step, index) => (
-            <div
-              key={step}
-              className="flex items-center gap-4"
-            >
-              <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
-                ✓
-              </div>
+        {isSuccess ? (
+          <div className="space-y-2">
+            <p>
+              Payment processed successfully.
+            </p>
   
-              <p>{step}</p>
-            </div>
-          ))}
-        </div>
+            <p>
+              No investigation required.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {steps.map((step) => (
+              <div
+                key={step}
+                className="flex items-center gap-4"
+              >
+                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
+                  ✓
+                </div>
+  
+                <p>{step}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }

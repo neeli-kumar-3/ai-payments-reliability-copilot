@@ -1,36 +1,22 @@
 "use client";
-type Investigation = {
-    id: string;
-    issue: string;
-    priority: string;
-  };
+
   
-  const investigations: Investigation[] = [
-    {
-      id: "TXN-1001",
-      issue: "Insufficient Funds",
-      priority: "Medium",
-    },
-    {
-      id: "TXN-1002",
-      issue: "Bank Timeout",
-      priority: "High",
-    },
-    {
-      id: "TXN-1003",
-      issue: "Fraud Suspected",
-      priority: "Critical",
-    },
-  ];
+  import {
+    sampleTransactions,
+    Transaction,
+  } from "@/data/sample-transactions";
   
   type Props = {
     selectedId: string;
     onSelect: (id: string) => void;
+  
+    transactions?: Transaction[];
   };
   
   export default function InvestigationQueue({
     selectedId,
     onSelect,
+    transactions,
   }: Props) {
     return (
       <div className="border border-zinc-800 bg-zinc-900 rounded-2xl p-6">
@@ -45,7 +31,7 @@ type Investigation = {
         </div>
   
         <div className="space-y-3">
-          {investigations.map((item) => (
+        {(transactions ?? sampleTransactions).map((item) => (
            <div
            key={item.id}
            onClick={() => onSelect(item.id)}
@@ -62,7 +48,7 @@ type Investigation = {
                   </p>
   
                   <p className="text-sm text-zinc-500">
-                    {item.issue}
+                  {item.failureType}
                   </p>
                 </div>
   

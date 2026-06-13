@@ -5,9 +5,26 @@ import MetricCard from "@/components/MetricCard";
 import InvestigationQueue from "@/components/InvestigationQueue";
 import InvestigationDetails from "@/components/InvestigationDetails";
 import WorkflowPipeline from "@/components/WorkflowPipeline";
+import UploadPanel from "@/components/UploadPanel";
+import { sampleTransactions } from "@/data/sample-transactions";
 
 export default function Home() {
   const [selectedId, setSelectedId] = useState("TXN-1001");
+  const [transactions, setTransactions] =
+  useState(sampleTransactions);
+  console.log("PAGE TRANSACTIONS", transactions);
+  const totalTransactions = transactions.length;
+
+const failedTransactions = transactions.filter(
+  (txn) => txn.status === "FAILED"
+).length;
+
+const failureRate =
+  totalTransactions > 0
+    ? Math.round(
+        (failedTransactions / totalTransactions) * 100
+      )
+    : 0;
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-7xl mx-auto px-8 py-10">
@@ -19,7 +36,7 @@ export default function Home() {
             </p>
 
             <h1 className="text-5xl font-semibold tracking-tight mb-4">
-              AI Payments Reliability Copilot
+              AI Payments Analysis Copilot
             </h1>
 
             <p className="text-zinc-400 max-w-3xl leading-7">
@@ -47,23 +64,23 @@ export default function Home() {
         <>
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-    <MetricCard
-      title="Failed Transactions"
-      value="1,284"
-      subtitle="+12% anomaly spike"
-    />
+  <MetricCard
+  title="Total Transactions"
+  value={String(totalTransactions)}
+  subtitle="Uploaded transactions"
+/>
 
-    <MetricCard
-      title="Retry Recovery Rate"
-      value="68%"
-      subtitle="AI-guided retries"
-    />
+<MetricCard
+  title="Failed Transactions"
+  value={String(failedTransactions)}
+  subtitle={`${failureRate}% failure rate`}
+/>
 
-    <MetricCard
-      title="Human Escalations"
-      value="42"
-      subtitle="Awaiting review"
-    />
+<MetricCard
+  title="Human Escalations"
+  value="42"
+  subtitle="Awaiting review"
+/>
 
   </div>
 
@@ -89,19 +106,14 @@ export default function Home() {
 
   <div className="lg:col-span-2">
 
-    <div className="border-2 border-dashed border-zinc-700 rounded-2xl p-16 text-center mb-6">
-      <p className="text-xl mb-3">
-        Upload Payments CSV
-      </p>
+  <UploadPanel
+  setTransactions={setTransactions}
+/>
 
-      <p className="text-zinc-500">
-        AI orchestration workflow will begin automatically
-      </p>
-    </div>
-
-    <InvestigationQueue
+<InvestigationQueue
   selectedId={selectedId}
   onSelect={setSelectedId}
+  transactions={transactions}
 />
 
   </div>
@@ -109,9 +121,11 @@ export default function Home() {
   <div className="space-y-6">
   <InvestigationDetails
   selectedId={selectedId}
+  transactions={transactions}
 />
 <WorkflowPipeline
   selectedId={selectedId}
+  transactions={transactions}
 />
   </div>
 
