@@ -9,13 +9,12 @@ type Props = {
     React.SetStateAction<Transaction[]>
   >;
 };
-  
-  export default function UploadPanel({
-    setTransactions,
-  }: Props) {
-    const [fileName, setFileName] = useState("");
-    const [csvContent, setCsvContent] = useState("");
-    const [rows, setRows] = useState<Transaction[]>([]);
+
+export default function UploadPanel({
+  setTransactions,
+}: Props) {
+  const [fileName, setFileName] = useState("");
+  const [rows, setRows] = useState<Transaction[]>([]);
 
   return (
     <div className="border-2 border-dashed border-zinc-700 rounded-2xl p-16 text-center mb-6">
@@ -24,7 +23,7 @@ type Props = {
       </p>
 
       <p className="text-zinc-500 mb-6">
-        Upload failed payment transactions for AI triage
+        Upload payment transaction data for AI investigation
       </p>
 
       <input
@@ -35,66 +34,48 @@ type Props = {
 
           if (file) {
             setFileName(file.name);
-          
+
             const text = await file.text();
-          
-            setCsvContent(text);
 
             const parsedRows = text
-            .split("\n")
-            .slice(1)
-            .filter((row) => row.trim() !== "")
-            .map((row) => {
-              const [
-                id,
-                amount,
-                status,
-                failureType,
-              ] = row.split(",");
-          
-              return {
+              .split("\n")
+              .slice(1)
+              .filter((row) => row.trim() !== "")
+              .map((row) => {
+                const [
+                  id,
+                  amount,
+                  status,
+                  failureType,
+                ] = row.split(",");
 
-                id: id.trim(),
-              
-                amount: Number(amount),
-              
-                status: status.trim(),
-              
-                failureType: failureType?.trim() ?? "",
-              
-                priority: "Medium",
-              
-              };
-            });
-            console.log(parsedRows);
+                return {
+                  id: id.trim(),
+                  amount: Number(amount),
+                  status: status.trim(),
+                  failureType:
+                    failureType?.trim() ?? "",
+                  priority: "Medium",
+                };
+              });
+
             setRows(parsedRows);
             setTransactions(parsedRows);
           }
         }}
       />
 
-{fileName && (
-  <p className="mt-4 text-sm text-emerald-400">
-    Uploaded: {fileName}
-  </p>
-)}
+      {fileName && (
+        <p className="mt-4 text-sm text-emerald-400">
+          Uploaded: {fileName}
+        </p>
+      )}
 
-{rows.length > 0 && (
-  <div className="mt-6 text-left">
-    <p className="mb-2 font-medium">
-      Parsed Transactions
-    </p>
-
-    {rows.map((row, index) => (
-      <div
-        key={index}
-        className="text-xs text-zinc-400"
-      >
-        {`${row.id} • $${row.amount} • ${row.failureType}`}
-      </div>
-    ))}
-  </div>
-)}
+      {rows.length > 0 && (
+        <p className="mt-2 text-sm text-zinc-400">
+          {rows.length} transactions loaded
+        </p>
+      )}
     </div>
   );
 }

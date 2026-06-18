@@ -1,30 +1,64 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MetricCard from "@/components/MetricCard";
 import InvestigationQueue from "@/components/InvestigationQueue";
 import InvestigationDetails from "@/components/InvestigationDetails";
 import WorkflowPipeline from "@/components/WorkflowPipeline";
 import UploadPanel from "@/components/UploadPanel";
 import { sampleTransactions } from "@/data/sample-transactions";
+import FailureClassification from "@/components/FailureClassification";
 
 export default function Home() {
   const [selectedId, setSelectedId] = useState("TXN-1001");
+
+  const [investigationResult, setInvestigationResult] =
+    useState<any>(null);
+
   const [transactions, setTransactions] =
-  useState(sampleTransactions);
+    useState(sampleTransactions);
+
+  useEffect(() => {
+    const transaction = transactions.find(
+      (txn) => txn.id === selectedId
+    );
+
+    if (!transaction) return;
+
+    const investigate = async () => {
+      const response = await fetch(
+        "/api/investigate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(transaction),
+        }
+      );
+
+      const data = await response.json();
+
+      setInvestigationResult(data);
+    };
+
+    investigate();
+  }, [selectedId, transactions]);
+
   console.log("PAGE TRANSACTIONS", transactions);
+
   const totalTransactions = transactions.length;
 
-const failedTransactions = transactions.filter(
-  (txn) => txn.status === "FAILED"
-).length;
+  const failedTransactions = transactions.filter(
+    (txn) => txn.status === "FAILED"
+  ).length;
 
-const failureRate =
-  totalTransactions > 0
-    ? Math.round(
-        (failedTransactions / totalTransactions) * 100
-      )
-    : 0;
+  const failureRate =
+    totalTransactions > 0
+      ? Math.round(
+          (failedTransactions / totalTransactions) * 100
+        )
+      : 0;
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-7xl mx-auto px-8 py-10">
@@ -81,6 +115,9 @@ const failureRate =
   value="42"
   subtitle="Awaiting review"
 />
+<FailureClassification
+  transactions={transactions}
+/>
 
   </div>
 
@@ -102,6 +139,7 @@ const failureRate =
   </div>
 </div>
 
+
 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
   <div className="lg:col-span-2">
@@ -118,16 +156,18 @@ const failureRate =
 
   </div>
 
-  <div className="space-y-6">
+  <div className="space-y-6 sticky top-6 self-start">
   <InvestigationDetails
   selectedId={selectedId}
   transactions={transactions}
+  investigationResult={investigationResult}
 />
-<WorkflowPipeline
-  selectedId={selectedId}
-  transactions={transactions}
-/>
-  </div>
+
+  <WorkflowPipeline
+    selectedId={selectedId}
+    transactions={transactions}
+  />
+</div>
 
 </div>
 

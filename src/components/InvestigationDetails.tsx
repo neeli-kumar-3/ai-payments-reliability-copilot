@@ -6,11 +6,13 @@ import {
   type Props = {
     selectedId: string;
     transactions?: Transaction[];
+    investigationResult?: any;
   };
   
   export default function InvestigationDetails({
     selectedId,
     transactions,
+    investigationResult,
   }: Props) {
     const transaction = (
       transactions ?? sampleTransactions
@@ -20,7 +22,7 @@ import {
       transaction?.status === "SUCCESS";
   
     return (
-      <div className="border border-zinc-800 bg-zinc-900 rounded-2xl p-6">
+      <div className="border border-zinc-800 bg-zinc-900 rounded-2xl p-6 max-h-[75vh] overflow-y-auto">
         <h3 className="text-xl font-semibold mb-6">
           Investigation Details
         </h3>
@@ -110,30 +112,41 @@ import {
               </div>
   
               <div>
-                <p className="text-xs text-zinc-500 mb-1">
-                  AI STATUS
-                </p>
-                <p className="text-amber-400">
-                  Pending Analysis
-                </p>
-              </div>
+  <p className="text-xs text-zinc-500 mb-1">
+    AI STATUS
+  </p>
+
+  <p
+    className={
+      investigationResult
+        ? "text-emerald-400"
+        : "text-amber-400"
+    }
+  >
+    {investigationResult
+      ? "Analysis Complete"
+      : "Pending Analysis"}
+  </p>
+</div>
   
               <div>
                 <p className="text-xs text-zinc-500 mb-1">
                   RECOMMENDED ACTION
                 </p>
-                <p className="text-zinc-500">
-                  Awaiting AI analysis
-                </p>
+                <p className="text-zinc-300">
+  {investigationResult?.recommendedAction ??
+    "Awaiting AI analysis"}
+</p>
               </div>
   
               <div>
                 <p className="text-xs text-zinc-500 mb-1">
                   CUSTOMER COMMUNICATION
                 </p>
-                <p className="text-zinc-500">
-                  Not generated yet
-                </p>
+                <p className="text-zinc-300">
+                {investigationResult?.customerCommunication ??
+  "Not generated yet"}
+</p>
               </div>
             </>
           )}
